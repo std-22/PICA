@@ -1,0 +1,7 @@
+tensorflow~=2.8.0
+numpy~=1.22.3
+opencv-python~=4.2.0.34
+requests~=2.23.0
+matplotlib~=3.2.1
+Pillow~=7.1.1
+streamlit
