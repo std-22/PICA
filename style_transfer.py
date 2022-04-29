@@ -1,14 +1,8 @@
 import tensorflow_hub as hub
 import tensorflow as tf
-from matplotlib import pyplot as plt
 import numpy as np
 # import cv2
-import streamlit as sl
 from PIL import Image, ImageFilter, ImageEnhance
-
-# import requests
-
-plt.rcParams.update({'font.size': 22})
 
 
 class StyleTransfer:
@@ -88,12 +82,3 @@ class StyleTransfer:
           image (PIL.Image)
         """
         return ImageEnhance.Color(image).enhance(coefficient)
-
-
-if __name__ == '__main__':
-    model = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
-    style_transfer = StyleTransfer()
-    source_image = Image.open("C:/Users/User/Downloads/girl.jpg")
-    style_image = Image.open("C:/Users/User/Downloads/Пейзаж с бабочками.webp")
-    stylized_image = style_transfer.transfer_style(source_image, style_image, 540)
-    stylized_image.save('stylized_image2.png')
