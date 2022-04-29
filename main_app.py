@@ -9,7 +9,7 @@ import shutil
 def set_appearance():
     """Configurate web-site settings."""
     sl.set_page_config(page_title='PICA',
-                       page_icon=Image.open('C:/Users/User/Desktop/python/PICA/assets/Pica_logo_plus.jpg'),
+                       page_icon=Image.open('assets/Pica_logo_plus.jpg'),
                        layout="wide")
     sl.title('PICA')
     sl.markdown(""" <style>
