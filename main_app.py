@@ -1,6 +1,9 @@
+import random
 from style_transfer import StyleTransfer
 import streamlit as sl
 from PIL import Image
+import os
+import shutil
 
 
 def set_appearance():
@@ -17,6 +20,10 @@ def set_appearance():
 
 set_appearance()
 scaler = sl.slider('Intensity', 0, 100)
+style_transfer = StyleTransfer()
+
+if not os.path.isdir('generated_images'):
+    os.mkdir('generated_images')
 
 col1, col2, col3 = sl.columns(3)
 with col1:
@@ -33,6 +40,22 @@ with col2:
 
 with col3:
     if sl.button('Generate') and style_image and src_image:
-        style_transfer = StyleTransfer()
         stylized_image = style_transfer.transfer_style(src_image, style_image, scaler / 100 * (1080 - 360) + 360)
-        sl.image(stylized_image, caption='Stylized image')
+        sl.image(stylized_image)
+        stylized_image.save(f'generated_images/{str(random.randint(0, 10000))}.png')
+
+if sl.button('Clean history'):
+    for image in os.listdir('generated_images'):
+        os.remove(f'generated_images/{image}')
+
+if len(os.listdir('generated_images')) > 0:
+    for col, image in zip(sl.columns(len(os.listdir('generated_images'))), os.listdir('generated_images')):
+        with col:
+            style_image = Image.open('generated_images/' + image)
+            sl.image(style_image, caption='Stylized image', use_column_width='always')
+            with open('generated_images/' + image, 'rb') as file:
+                btn = sl.download_button(label='Download',
+                                         data=file,
+                                         file_name=f'stylized_{image}',
+                                         mime='image/png',
+                                         key=random.randint(0, 10000))
