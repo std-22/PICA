@@ -17,9 +17,14 @@ def set_appearance():
     </style> """, unsafe_allow_html=True)
 
 
+@st.cache(ttl=1800)
+def get_style_transfer():
+    return StyleTransfer()
+
+
 set_appearance()
 scaler = st.slider('Intensity', 0, 100)
-style_transfer = StyleTransfer()
+style_transfer = get_style_transfer()
 
 if not os.path.isdir('generated_images'):
     os.mkdir('generated_images')
