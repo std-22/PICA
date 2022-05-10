@@ -58,16 +58,17 @@ class Application:
 
     def generate(self):
         scale = self.slider()
-        if st.button('Generate') and self.source_img and self.style_img:
-            try:
+        try:
+            if st.button('Generate') and self.source_img and self.style_img:
                 stylized_image = self.get_style_transfer().transfer_style(self.source_img, self.style_img,
                                                                           scale / 100 * (1080 - 360) + 360)
                 stylized_image = ImageEnhancer.reproduce_shape(stylized_image, self.source_img.size)
                 stylized_image = ImageEnhancer.increase_saturation(stylized_image, 1.15)
                 stylized_image.save(f'generated_images/{np.random.randint(0, 10000)}.png')
-            except Exception:
-                st.error('Something went wrong...')
-                st.error('We are already working to fix this bug!')
+        except Exception as e:
+            st.error('Something went wrong...')
+            st.error('We are already working to fix this bug!')
+            st.error(e)
 
     def history(self):
         path = 'generated_images/'
