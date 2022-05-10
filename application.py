@@ -1,22 +1,19 @@
 import os
 import random
-import socket
-from requests import get
 
 import streamlit as st
 from PIL import Image
 
-from style_transfer import StyleTransfer
+from algorithms.image_enhancer import ImageEnhancer
+from algorithms.style_transfer import StyleTransfer
 
 
 class Application:
     def __init__(self, source_img=None, style_img=None):
         self.source_img = source_img
         self.style_img = style_img
-        self.user_ip = get('https://api.ipify.org').text
 
     def run(self):
-        self.set_config()
         self.image_upload()
         self.generate()
         self.history()
@@ -25,23 +22,25 @@ class Application:
         """Configurate web-site settings."""
         st.set_page_config(page_title='PICA',
                            page_icon=Image.open('assets/Pica_logo_plus.jpg'),
-                           layout="wide")
+                           layout="centered")
         st.title('PICA')
-        st.markdown(""" <style>
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        </style> """, unsafe_allow_html=True)
+        st.markdown("<style>#MainMenu {visibility: hidden;}footer {visibility: hidden;}</style> ",
+                    unsafe_allow_html=True)
 
     @st.cache(ttl=1800)
     def get_style_transfer(self):
         return StyleTransfer()
 
+    @st.cache(ttl=1800)
+    def get_image_enhancer(self):
+        return ImageEnhancer
+
     def slider(self):
-        return st.slider('Intensity', 0, 100)
+        return st.slider(label='Intensity', min_value=0, max_value=100, value=50, step=1)
 
     def image_upload(self):
-        if not os.path.isdir('generated_images/' + self.user_ip):
-            os.mkdir('generated_images/' + self.user_ip)
+        if not os.path.isdir('generated_images/'):
+            os.mkdir('generated_images/')
 
         col1, col2 = st.columns(2)
         with col1:
@@ -61,10 +60,13 @@ class Application:
         if st.button('Generate') and self.source_img and self.style_img:
             stylized_image = self.get_style_transfer().transfer_style(self.source_img, self.style_img,
                                                                       scale / 100 * (1080 - 360) + 360)
-            stylized_image.save(f'generated_images/{self.user_ip}/{str(random.randint(0, 10000))}.png')
+            stylized_image = ImageEnhancer.reproduce_shape(stylized_image, self.source_img.size)
+            stylized_image = ImageEnhancer.increase_saturation(stylized_image, 1.15)
+            stylized_image.save(f'generated_images/{self.source_img.filename}-'
+                                f'{len(os.listdir("generated_images"))}.png')
 
     def history(self):
-        path = 'generated_images/' + self.user_ip
+        path = 'generated_images/'
         if len(os.listdir(path)) > 0 and st.button('Clean history'):
             for image in os.listdir(path):
                 os.remove(f'{path}/{image}')
@@ -80,7 +82,7 @@ class Application:
                         with st.container():
                             st.download_button(label='Download',
                                                data=file,
-                                               file_name=f'stylized_{image}',
+                                               file_name=f'stylized_{image.filename}',
                                                mime='image/png',
                                                key=random.randint(0, 10000))
                     if st.button(label='Delete', key=f'delete-button-{image.filename}'):
