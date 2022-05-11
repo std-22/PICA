@@ -1,8 +1,8 @@
-import tensorflow_hub as hub
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
+import tensorflow_hub as hub
 # import cv2
-from PIL import Image, ImageFilter, ImageEnhance
+from PIL import Image
 
 
 class StyleTransfer:
@@ -69,16 +69,3 @@ class StyleTransfer:
             assert tensor.shape[0] == 1
             tensor = tensor[0]
         return Image.fromarray(tensor)
-
-    @staticmethod
-    def increase_saturation(image, coefficient=1.25):
-        """Increase saturation of input image.
-
-        Args:
-          image (PIL.Image) - input image.
-          coefficient (float) - coefficient for saturation increase
-
-        Returns:
-          image (PIL.Image)
-        """
-        return ImageEnhance.Color(image).enhance(coefficient)
