@@ -58,17 +58,25 @@ class Application:
 
     def generate(self):
         scale = self.slider()
+        if 'generate_button_status' not in st.session_state:
+            st.session_state.generate_button_status = False
         try:
-            if st.button('Generate') and self.source_img and self.style_img:
+            placeholder = st.empty()
+            generate_button = placeholder.button('Generate', disabled=False, key='1')
+            if generate_button and self.source_img and self.style_img:
+                generate_button = placeholder.button('Generate', disabled=True, key='2')
+                st.session_state.generate_button_status = True
                 stylized_image = self.get_style_transfer().transfer_style(self.source_img, self.style_img,
                                                                           scale / 100 * (1080 - 360) + 360)
                 stylized_image = ImageEnhancer.reproduce_shape(stylized_image, self.source_img.size)
                 stylized_image = ImageEnhancer.increase_saturation(stylized_image, 1.15)
                 stylized_image.save(f'generated_images/{np.random.randint(0, 10000)}.png')
+                generate_button = placeholder.button('Generate', disabled=False, key='3')
+                placeholder.empty()
+                st.experimental_rerun()
         except Exception as e:
             st.error('Something went wrong...')
             st.error('We are already working to fix this bug!')
-            st.error(e)
 
     def history(self):
         path = 'generated_images/'
