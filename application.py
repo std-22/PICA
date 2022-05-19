@@ -40,7 +40,6 @@ class Application:
         return st.slider(label='Intensity', min_value=0, max_value=100, value=50, step=1)
 
     def image_upload(self):
-        st.write('total', sum(os.path.getsize(f) for f in os.listdir('generated_images') if os.path.isfile(f)))
 
         if not os.path.isdir('generated_images/'):
             os.mkdir('generated_images/')
