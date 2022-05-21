@@ -4,6 +4,7 @@ import random
 import numpy as np
 import streamlit as st
 from PIL import Image
+from streamlit_option_menu import option_menu
 
 from algorithms.image_enhancer import ImageEnhancer
 from algorithms.style_transfer import StyleTransfer
@@ -14,20 +15,6 @@ class Application:
         self.source_img = source_img
         self.style_img = style_img
 
-    def run(self):
-        self.image_upload()
-        self.generate()
-        self.history()
-
-    def set_config(self):
-        """Configurate web-site settings."""
-        st.set_page_config(page_title='PICA',
-                           page_icon=Image.open('assets/Pica_logo_plus.jpg'),
-                           layout="centered")
-        st.title('PICA')
-        st.markdown("<style>#MainMenu {visibility: hidden;}footer {visibility: hidden;}</style> ",
-                    unsafe_allow_html=True)
-
     @st.cache(ttl=1800)
     def get_style_transfer(self):
         return StyleTransfer()
@@ -36,11 +23,41 @@ class Application:
     def get_image_enhancer(self):
         return ImageEnhancer
 
-    def slider(self):
-        return st.slider(label='Intensity', min_value=0, max_value=100, value=50, step=1)
+    def run(self) -> None:
+        self.navigation()
+        # self.image_upload()
+        # self.generate()
+        # self.history()
 
-    def image_upload(self):
+    def navigation(self) -> None:
+        """Set navigation bar"""
+        with st.sidebar:
+            option = option_menu(menu_title='',
+                                 options=['Image', 'Video', 'Gallery', 'Reference'],
+                                 icons=['image', 'camera-video', 'archive', 'link'],
+                                 orientation='vertical')
+        if option == 'Image':
+            self.image_upload()
+            self.generate()
+            self.history()
+        elif option == 'Video':
+            st.info('In development process! Coming soon...')
+        elif option == 'Gallery':
+            st.info('In development process! Coming soon...')
+        else:
+            st.info('Link to article')
 
+    def set_config(self) -> None:
+        """Configurate web-site settings."""
+        st.set_page_config(page_title='PICA',
+                           page_icon=Image.open('assets/Pica_logo_plus.jpg'),
+                           layout="centered")
+        st.title('PICA')
+        st.write('<style>div.block-container{padding-top:2rem;}</style>', unsafe_allow_html=True)
+        st.markdown("<style>#MainMenu {visibility: hidden;}footer {visibility: hidden;}</style> ",
+                    unsafe_allow_html=True)
+
+    def image_upload(self) -> None:
         if not os.path.isdir('generated_images/'):
             os.mkdir('generated_images/')
 
@@ -57,7 +74,7 @@ class Application:
                 self.style_img = Image.open(style_image)
                 st.image(style_image, caption='Style image')
 
-    def generate(self):
+    def generate(self) -> None:
         scale = self.slider()
         if 'generate_button_status' not in st.session_state:
             st.session_state.generate_button_status = False
@@ -78,6 +95,12 @@ class Application:
         except Exception as e:
             st.error('Something went wrong...')
             st.error('We are already working to fix this bug!')
+
+    def slider(self) -> int:
+        """Display slider.
+        Returns:
+            intensity value (int)"""
+        return st.slider(label='Intensity', min_value=0, max_value=100, value=50, step=1)
 
     def history(self):
         """"""
