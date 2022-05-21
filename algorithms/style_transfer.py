@@ -13,7 +13,7 @@ class StyleTransfer:
     """
 
     def __init__(self):
-        self.model = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
+        self.model = hub.load('magenta_arbitrary-image-stylization-v1-256_2')
 
     def transfer_style(self, content_image, style_image, scaler=540):
         """Transfer style from style image into content image.
