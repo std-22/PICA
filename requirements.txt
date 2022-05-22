@@ -7,3 +7,4 @@ matplotlib~=3.2.1
 Pillow~=7.1.1
 streamlit~=1.9.0
 streamlit-option-menu~=0.3.2
+extra-streamlit-components~=0.1.53
