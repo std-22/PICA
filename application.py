@@ -53,7 +53,7 @@ class Application:
         elif option == 'Video':
             st.info('In development process! Coming soon...')
         elif option == 'Gallery':
-            st.info('In development process! Coming soon...')
+            st.image('assets/пример_переноса_стиля.png')
         else:
             st.info('Link to article')
 
