@@ -10,15 +10,17 @@ from algorithms.image_enhancer import ImageEnhancer
 from algorithms.style_transfer import StyleTransfer
 
 
+@st.experimental_singleton
+def get_style_transfer():
+    return StyleTransfer()
+
+
 class Application:
     def __init__(self, source_img=None, style_img=None):
         self.source_img = source_img
         self.style_img = style_img
         self.user = None
 
-    @st.cache(ttl=1800)
-    def get_style_transfer(self):
-        return StyleTransfer()
 
     @st.cache
     def get_cookies_id(self) -> str:
@@ -88,7 +90,7 @@ class Application:
             if generate_button and self.source_img and self.style_img:
                 placeholder.button('Generate', disabled=True, key='2')
                 st.session_state.generate_button_status = True
-                stylized_image = self.get_style_transfer().transfer_style(self.source_img, self.style_img,
+                stylized_image = get_style_transfer().transfer_style(self.source_img, self.style_img,
                                                                           scale / 100 * (1080 - 360) + 360)
                 stylized_image = ImageEnhancer.reproduce_shape(stylized_image, self.source_img.size)
                 stylized_image = ImageEnhancer.increase_saturation(stylized_image, 1.15)
@@ -101,6 +103,7 @@ class Application:
         except Exception as e:
             st.error('Something went wrong...')
             st.error('We are already working to fix this bug!')
+            st.write(e)
 
     def slider(self) -> int:
         """Display slider.
