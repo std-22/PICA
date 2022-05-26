@@ -11,7 +11,8 @@ from algorithms.style_transfer import StyleTransfer
 
 
 @st.experimental_singleton
-def get_style_transfer():
+def get_style_transfer() -> StyleTransfer:
+    """"""
     return StyleTransfer()
 
 
@@ -20,7 +21,6 @@ class Application:
         self.source_img = source_img
         self.style_img = style_img
         self.user = None
-
 
     @st.cache
     def get_cookies_id(self) -> str:
@@ -38,6 +38,7 @@ class Application:
                     unsafe_allow_html=True)
 
     def run(self) -> None:
+        """Run application."""
         self.create_folder()
         self.navigation()
 
@@ -75,12 +76,14 @@ class Application:
                 st.image(style_image, caption='Style image')
 
     def create_folder(self) -> None:
+        """Create folders if they do not exist"""
         if not os.path.isdir('generated_images/'):
             os.mkdir('generated_images/')
         if not os.path.isdir(f"generated_images/{self.user}"):
             os.mkdir(f"generated_images/{self.user}")
 
     def generate(self) -> None:
+        """Generates stylized image on button click and ave to history."""
         scale = self.slider()
         if 'generate_button_status' not in st.session_state:
             st.session_state.generate_button_status = False
@@ -91,7 +94,7 @@ class Application:
                 placeholder.button('Generate', disabled=True, key='2')
                 st.session_state.generate_button_status = True
                 stylized_image = get_style_transfer().transfer_style(self.source_img, self.style_img,
-                                                                          scale / 100 * (1080 - 360) + 360)
+                                                                     scale / 100 * (1080 - 360) + 360)
                 stylized_image = ImageEnhancer.reproduce_shape(stylized_image, self.source_img.size)
                 stylized_image = ImageEnhancer.increase_saturation(stylized_image, 1.15)
                 stylized_image_number = len(os.listdir(f'generated_images/{self.user}')) if os.path.isdir(
@@ -112,7 +115,7 @@ class Application:
         return st.slider(label='Intensity', min_value=0, max_value=100, value=50, step=1)
 
     def history(self):
-        """"""
+        """Displays history of generated images"""
         path = f'generated_images/{self.user}'
         if len(os.listdir(path)) > 0 and st.button('Clean history'):
             for image in os.listdir(path):
