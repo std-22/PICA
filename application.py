@@ -2,11 +2,13 @@ import os
 import random
 
 import streamlit as st
-from PIL import Image
+from PIL import Image, ImageFile
 from streamlit_option_menu import option_menu
 
 from algorithms.image_enhancer import ImageEnhancer
 from algorithms.style_transfer import StyleTransfer
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 @st.experimental_singleton
