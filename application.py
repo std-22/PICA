@@ -3,7 +3,6 @@ import random
 
 import streamlit as st
 from PIL import Image
-from extra_streamlit_components import CookieManager
 from streamlit_option_menu import option_menu
 
 from algorithms.image_enhancer import ImageEnhancer
@@ -20,18 +19,12 @@ class Application:
     def __init__(self, source_img=None, style_img=None):
         self.source_img = source_img
         self.style_img = style_img
-        self.user = None
-
-    @st.cache
-    def get_cookies_id(self) -> str:
-        return CookieManager().get('ajs_user_id')
 
     def set_config(self) -> None:
         """Configurate web-site settings."""
         st.set_page_config(page_title='PICA',
                            page_icon=Image.open('assets/Pica_logo_plus.jpg'),
                            layout="centered")
-        self.user = CookieManager().get('ajs_user_id')
         st.title('PICA')
         st.write('<style>div.block-container{padding-top:2rem;}</style>', unsafe_allow_html=True)
         st.markdown("<style>#MainMenu {visibility: hidden;}footer {visibility: hidden;}</style> ",
@@ -79,8 +72,6 @@ class Application:
         """Create folders if they do not exist"""
         if not os.path.isdir('generated_images/'):
             os.mkdir('generated_images/')
-        if not os.path.isdir(f"generated_images/{self.user}"):
-            os.mkdir(f"generated_images/{self.user}")
 
     def generate(self) -> None:
         """Generates stylized image on button click and ave to history."""
@@ -97,9 +88,9 @@ class Application:
                                                                      scale / 100 * (1080 - 360) + 360)
                 stylized_image = ImageEnhancer.reproduce_shape(stylized_image, self.source_img.size)
                 stylized_image = ImageEnhancer.increase_saturation(stylized_image, 1.15)
-                stylized_image_number = len(os.listdir(f'generated_images/{self.user}')) if os.path.isdir(
-                    f'generated_images/{self.user}') else 0
-                stylized_image.save(f'generated_images/{self.user}/{stylized_image_number}.png')
+                stylized_image_number = len(os.listdir(f'generated_images')) if os.path.isdir(
+                    f'generated_images') else 0
+                stylized_image.save(f'generated_images/{stylized_image_number}.png')
                 placeholder.button('Generate', disabled=False, key='3')
                 placeholder.empty()
                 st.experimental_rerun()
@@ -116,17 +107,17 @@ class Application:
 
     def history(self):
         """Displays history of generated images"""
-        path = f'generated_images/{self.user}'
+        path = f'generated_images'
         if len(os.listdir(path)) > 0 and st.button('Clean history'):
             for image in os.listdir(path):
                 os.remove(f'{path}/{image}')
 
         if len(os.listdir(path)) > 0:
             stylized_images = [Image.open(path + '/' + image) for image in os.listdir(path)][::-1]
-            COLS_IN_GRID = 5
-            cols = st.columns(COLS_IN_GRID)
+            cols_in_grid = 5
+            cols = st.columns(cols_in_grid)
             for index, image in enumerate(stylized_images):
-                with cols[index % COLS_IN_GRID]:
+                with cols[index % cols_in_grid]:
                     st.image(stylized_images[index], caption='Stylized image', use_column_width='always')
                     with open(image.filename, 'rb') as file:
                         with st.container():
