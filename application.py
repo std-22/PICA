@@ -51,9 +51,9 @@ class Application:
         elif option == 'Video':
             st.info('In development process! Coming soon...')
         elif option == 'Gallery':
-            st.image('assets/пример_переноса_стиля.png')
+            st.image('assets/examples.png')
         else:
-            st.info('Link to article')
+            st.markdown('You can find the network in this [paper](https://arxiv.org/abs/1705.06830).')
 
     def image_upload(self) -> None:
         """Displays two button for content and style image uploading."""
