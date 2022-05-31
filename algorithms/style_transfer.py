@@ -15,7 +15,7 @@ class StyleTransfer:
     def __init__(self):
         self.model = hub.load('magenta_arbitrary-image-stylization-v1-256_2')
 
-    def transfer_style(self, content_image, style_image, scaler=540):
+    def transfer_style(self, content_image, style_image, scaler):
         """Transfer style from style image into content image.
 
         Args:
@@ -26,9 +26,8 @@ class StyleTransfer:
         Returns:
           stylized_image (PIL.Image) - stylized source image.
         """
-        max_dim = scaler
-        content_image = self.__img_to_tensor(content_image, max_dim)
-        style_image = self.__img_to_tensor(style_image, max_dim)
+        content_image = self.__img_to_tensor(content_image, scaler)
+        style_image = self.__img_to_tensor(style_image, scaler)
         stylized_image = self.model(content_image, style_image)[0]
         return self.__tensor_to_image(stylized_image)
 
