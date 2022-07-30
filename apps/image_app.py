@@ -2,13 +2,10 @@ import os
 import random
 
 import streamlit as st
-from PIL import Image, ImageFile
-from streamlit_option_menu import option_menu
+from PIL import Image
 
 from algorithms.image_enhancer import ImageEnhancer
 from algorithms.style_transfer import StyleTransfer
-
-ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 @st.experimental_singleton
@@ -17,43 +14,11 @@ def get_style_transfer() -> StyleTransfer:
     return StyleTransfer()
 
 
-class Application:
+class ImageApp:
     def __init__(self, source_img=None, style_img=None):
+        super().__init__()
         self.source_img = source_img
         self.style_img = style_img
-
-    def set_config(self) -> None:
-        """Configurate web-site settings."""
-        st.set_page_config(page_title='PICA',
-                           page_icon=Image.open('assets/Pica_logo_plus.jpg'),
-                           layout="centered")
-        st.title('PICA')
-        st.write('<style>div.block-container{padding-top:2rem;}</style>', unsafe_allow_html=True)
-        st.markdown("<style>#MainMenu {visibility: hidden;}footer {visibility: hidden;}</style> ",
-                    unsafe_allow_html=True)
-
-    def run(self) -> None:
-        """Run application."""
-        self.create_folder()
-        self.navigation()
-
-    def navigation(self) -> None:
-        """Set navigation bar"""
-        with st.sidebar:
-            option = option_menu(menu_title='',
-                                 options=['Image', 'Video', 'Gallery', 'Reference'],
-                                 icons=['image', 'camera-video', 'archive', 'link'],
-                                 orientation='vertical')
-        if option == 'Image':
-            self.image_upload()
-            self.generate()
-            self.history()
-        elif option == 'Video':
-            st.info('In development process! Coming soon...')
-        elif option == 'Gallery':
-            st.image('assets/examples.png')
-        else:
-            st.markdown('You can find the network in this [paper](https://arxiv.org/abs/1705.06830).')
 
     def image_upload(self) -> None:
         """Displays two button for content and style image uploading."""
@@ -87,7 +52,7 @@ class Application:
                 placeholder.button('Generate', disabled=True, key='2')
                 st.session_state.generate_button_status = True
                 stylized_image = get_style_transfer().transfer_style(self.source_img, self.style_img,
-                                                                     scale / 100 * (1080 - 360) + 360)
+                                                                     (100 - scale) / 100 * (1080 - 360) + 360)
                 stylized_image = ImageEnhancer.reproduce_shape(stylized_image, self.source_img.size)
                 stylized_image = ImageEnhancer.increase_saturation(stylized_image, 1.15)
                 stylized_image_number = len(os.listdir(f'generated_images')) if os.path.isdir(
@@ -105,7 +70,7 @@ class Application:
         """Display slider.
         Returns:
             intensity value (int)"""
-        return st.slider(label='Intensity', min_value=0, max_value=100, value=50, step=1)
+        return st.slider(label='Interpolation', min_value=0, max_value=100, value=50, step=1)
 
     def history(self):
         """Displays history of generated images"""
