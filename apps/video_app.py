@@ -53,8 +53,8 @@ class VideoApp:
             fps = int(self.src_video.get(cv.CAP_PROP_FPS))
             frame_width = int(self.src_video.get(cv.CAP_PROP_FRAME_WIDTH))
             frame_height = int(self.src_video.get(cv.CAP_PROP_FRAME_HEIGHT))
-            out = cv.VideoWriter(f'stylized_videos/stylized_video.mp4',
-                                 cv.VideoWriter_fourcc(*'FMP4'),
+            out = cv.VideoWriter(f'stylized_videos/stylized_video.avi',
+                                 cv.VideoWriter_fourcc(*'XVID'),
                                  fps,
                                  (frame_width, frame_height))
             cap = self.src_video
@@ -86,10 +86,10 @@ class VideoApp:
         return st.slider(label='Interpolation', min_value=0, max_value=100, value=50, step=1)
 
     def download(self) -> None:
-        if os.path.exists('stylized_videos/stylized_video.mp4'):
-            with open('stylized_videos/stylized_video.mp4', 'rb') as file:
+        if os.path.exists('stylized_videos/stylized_video.avi'):
+            with open('stylized_videos/stylized_video.avi', 'rb') as file:
                 with st.container():
                     st.download_button(label='Download',
                                        data=file,
-                                       file_name=f'stylized_video.mp4',
+                                       file_name=f'stylized_video.avi',
                                        key=random.randint(0, 10000))
