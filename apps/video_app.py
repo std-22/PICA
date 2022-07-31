@@ -77,7 +77,7 @@ class VideoApp:
                         timer_placeholder.write(
                             f'{i}/{length} frames are processed. Style transfer will end in {time_to_wait} minutes')
                         bar.progress(i / length)
-                    catch Exception:
+                    except Exception:
                         pass
             cap.release()
             cv.destroyAllWindows()
