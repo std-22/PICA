@@ -34,6 +34,7 @@ class Application:
                                  orientation='vertical')
         if option == 'Image':
             image_app = ImageApp()
+            image_app.create_folder()
             image_app.image_upload()
             image_app.generate()
             image_app.history()
