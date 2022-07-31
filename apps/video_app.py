@@ -65,17 +65,20 @@ class VideoApp:
             for i in range(length):
                 ret, frame = cap.read()
                 if ret:
-                    start = time.perf_counter()
-                    stylized_frame = stf.transfer_style(frame, self.style_img,
-                                                        (100 - scale) / 100 * (1080 - 360) + 360)
-                    enhanced_frame = img_enhancer.reproduce_shape(stylized_frame, (frame_width, frame_height))
-                    end = time.perf_counter()
-                    img_placeholder.image(stylized_frame)
-                    out.write(np.asarray(enhanced_frame))
-                    time_to_wait = int((end - start) * (length - i) // 60)
-                    timer_placeholder.write(
-                        f'{i}/{length} frames are processed. Style transfer will end in {time_to_wait} minutes')
-                    bar.progress(i / length)
+                    try:
+                        start = time.perf_counter()
+                        stylized_frame = stf.transfer_style(frame, self.style_img,
+                                                            (100 - scale) / 100 * (1080 - 360) + 360)
+                        enhanced_frame = img_enhancer.reproduce_shape(stylized_frame, (frame_width, frame_height))
+                        end = time.perf_counter()
+                        img_placeholder.image(stylized_frame)
+                        out.write(np.asarray(enhanced_frame))
+                        time_to_wait = int((end - start) * (length - i) // 60)
+                        timer_placeholder.write(
+                            f'{i}/{length} frames are processed. Style transfer will end in {time_to_wait} minutes')
+                        bar.progress(i / length)
+                    catch Exception:
+                        pass
             cap.release()
             cv.destroyAllWindows()
 
