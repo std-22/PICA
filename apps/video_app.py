@@ -77,7 +77,6 @@ class VideoApp:
                         timer_placeholder.write(
                             f'{i}/{length} frames are processed. Style transfer will end in {time_to_wait} minutes')
                         bar.progress((i + 1) / length)
-                        time.sleep(0.2)
                     except Exception:
                         pass
             cap.release()
