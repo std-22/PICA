@@ -32,7 +32,7 @@ class VideoApp:
         """Displays two button for content and style image uploading."""
         col1, col2 = st.columns(2)
         with col1:
-            src_video = st.file_uploader(label='Source video', type=['mp4'])
+            src_video = st.file_uploader(label='Source video', type=['mp4', 'gif])
             if src_video:
                 tfile = tempfile.NamedTemporaryFile(delete=False)
                 tfile.write(src_video.read())
@@ -53,8 +53,8 @@ class VideoApp:
             fps = int(self.src_video.get(cv.CAP_PROP_FPS))
             frame_width = int(self.src_video.get(cv.CAP_PROP_FRAME_WIDTH))
             frame_height = int(self.src_video.get(cv.CAP_PROP_FRAME_HEIGHT))
-            out = cv.VideoWriter(f'stylized_videos/stylized_video.avi',
-                                 cv.VideoWriter_fourcc(*'XVID'),
+            out = cv.VideoWriter(f'stylized_videos/stylized_video.mp4',
+                                 cv.VideoWriter_fourcc(*'FMP4'),
                                  fps,
                                  (frame_width, frame_height))
             cap = self.src_video
@@ -75,12 +75,11 @@ class VideoApp:
                         out.write(np.asarray(enhanced_frame))
                         time_to_wait = int((end - start) * (length - i) // 60)
                         timer_placeholder.write(
-                            f'{i}/{length} frames are processed. Style transfer will end in {time_to_wait} minutes')
-                        bar.progress((i + 1) / length)
+                            f'{i+1}/{length} frames are processed. Style transfer will end in {time_to_wait} minutes')
+                        bar.progress((i) / length)
                     except Exception:
                         pass
             cap.release()
-            cv.destroyAllWindows()
 
     def __slider(self) -> int:
         """Display slider.
@@ -89,10 +88,10 @@ class VideoApp:
         return st.slider(label='Interpolation', min_value=0, max_value=100, value=50, step=1)
 
     def download(self) -> None:
-        if os.path.exists('stylized_videos/stylized_video.avi'):
+        if os.path.exists('stylized_videos/stylized_video.mp4'):
             with open('stylized_videos/stylized_video.avi', 'rb') as file:
                 with st.container():
                     st.download_button(label='Download',
                                        data=file,
-                                       file_name=f'stylized_video.avi',
+                                       file_name=f'stylized_video.mp4',
                                        key=random.randint(0, 10000))
