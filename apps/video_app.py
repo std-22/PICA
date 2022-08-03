@@ -32,7 +32,7 @@ class VideoApp:
         """Displays two button for content and style image uploading."""
         col1, col2 = st.columns(2)
         with col1:
-            src_video = st.file_uploader(label='Source video', type=['mp4', 'gif'])
+            src_video = st.file_uploader(label='Source video', type=['avi', 'mp4', 'gif'])
             if src_video:
                 tfile = tempfile.NamedTemporaryFile(delete=False)
                 tfile.write(src_video.read())
