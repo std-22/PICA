@@ -67,12 +67,13 @@ class VideoApp:
                 if ret:
                     try:
                         start = time.perf_counter()
-                        stylized_frame = stf.transfer_style(frame, self.style_img,
-                                                            (100 - scale) / 100 * (1080 - 360) + 360)
-                        enhanced_frame = img_enhancer.reproduce_shape(stylized_frame, (frame_width, frame_height))
+#                         stylized_frame = stf.transfer_style(frame, self.style_img,
+#                                                             (100 - scale) / 100 * (1080 - 360) + 360)
+#                         enhanced_frame = img_enhancer.reproduce_shape(stylized_frame, (frame_width, frame_height))
+                        stylized_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                         end = time.perf_counter()
                         img_placeholder.image(stylized_frame)
-                        out.write(np.asarray(enhanced_frame))
+                        out.write(np.asarray(stylized_frame))
                         time_to_wait = int((end - start) * (length - i) // 60)
                         timer_placeholder.write(
                             f'{i+1}/{length} frames are processed. Style transfer will end in {time_to_wait} minutes')
