@@ -53,10 +53,10 @@ class VideoApp:
             fps = int(self.src_video.get(cv.CAP_PROP_FPS))
             frame_width = int(self.src_video.get(cv.CAP_PROP_FRAME_WIDTH))
             frame_height = int(self.src_video.get(cv.CAP_PROP_FRAME_HEIGHT))
-#             out = cv.VideoWriter(f'stylized_videos/stylized_video.avi',
-#                                  cv.VideoWriter_fourcc(*'XVID'),
-#                                  fps,
-#                                  (frame_width, frame_height))
+            out = cv.VideoWriter(f'stylized_videos/stylized_video.avi',
+                                 cv.VideoWriter_fourcc(*'XVID'),
+                                 fps,
+                                 (frame_width, frame_height))
             cap = self.src_video
             length = int(cap.get(cv.CAP_PROP_FRAME_COUNT))
             img_placeholder = st.empty()
@@ -72,11 +72,12 @@ class VideoApp:
                         enhanced_frame = img_enhancer.reproduce_shape(stylized_frame, (frame_width, frame_height))
                         end = time.perf_counter()
                         img_placeholder.image(stylized_frame)
-#                         out.write(np.asarray(enhanced_frame))
+                        out.write(np.asarray(enhanced_frame))
                         time_to_wait = int((end - start) * (length - i) // 60)
                         timer_placeholder.write(
                             f'{i}/{length} frames are processed. Style transfer will end in {time_to_wait} minutes')
                         bar.progress((i + 1) / length)
+                        time.sleep(0.2)
                     except Exception:
                         pass
             cap.release()
