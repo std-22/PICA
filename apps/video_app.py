@@ -36,7 +36,7 @@ class VideoApp:
             if src_video:
                 tfile = tempfile.NamedTemporaryFile(delete=False)
                 tfile.write(src_video.read())
-                self.src_video = cv.VideoCapture(tfile.name)
+                self.src_video = tfile # cv.VideoCapture(tfile.name)
                 st.video(src_video)
 
         with col2:
@@ -50,14 +50,14 @@ class VideoApp:
         img_enhancer = ImageEnhancer()
         scale = self.__slider()
         if self.src_video and st.button(label='Transfer'):
-            fps = int(self.src_video.get(cv.CAP_PROP_FPS))
-            frame_width = int(self.src_video.get(cv.CAP_PROP_FRAME_WIDTH))
-            frame_height = int(self.src_video.get(cv.CAP_PROP_FRAME_HEIGHT))
-            out = cv.VideoWriter(f'stylized_videos/stylized_video.avi',
-                                 cv.VideoWriter_fourcc(*'XVID'),
-                                 fps,
-                                 (frame_width, frame_height))
-            cap = self.src_video
+            cap = cv.VideoCapture(self.src_video.name)
+            fps = int(cap.get(cv.CAP_PROP_FPS))
+            frame_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
+            frame_height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+#             out = cv.VideoWriter(f'stylized_videos/stylized_video.avi',
+#                                  cv.VideoWriter_fourcc(*'XVID'),
+#                                  fps,
+#                                  (frame_width, frame_height))
             length = int(cap.get(cv.CAP_PROP_FRAME_COUNT))
             img_placeholder = st.empty()
             timer_placeholder = st.empty()
@@ -67,13 +67,12 @@ class VideoApp:
                 if ret:
                     try:
                         start = time.perf_counter()
-#                         stylized_frame = stf.transfer_style(frame, self.style_img,
-#                                                             (100 - scale) / 100 * (1080 - 360) + 360)
-#                         enhanced_frame = img_enhancer.reproduce_shape(stylized_frame, (frame_width, frame_height))
-                        stylized_frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+                        stylized_frame = stf.transfer_style(frame, self.style_img,
+                                                            (100 - scale) / 100 * (1080 - 360) + 360)
+                        enhanced_frame = img_enhancer.reproduce_shape(stylized_frame, (frame_width, frame_height))
                         end = time.perf_counter()
                         img_placeholder.image(stylized_frame)
-                        out.write(np.asarray(stylized_frame))
+#                         out.write(np.asarray(stylized_frame))
                         time_to_wait = int((end - start) * (length - i) // 60)
                         timer_placeholder.write(
                             f'{i+1}/{length} frames are processed. Style transfer will end in {time_to_wait} minutes')
@@ -81,6 +80,7 @@ class VideoApp:
                     except Exception:
                         pass
             cap.release()
+#             out.release()
 
     def __slider(self) -> int:
         """Display slider.
