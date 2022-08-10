@@ -4,11 +4,12 @@ import tempfile
 import time
 
 import cv2 as cv
+from vidgear.gears import WriteGear, VideoGear
 import numpy as np
 import streamlit as st
 from PIL import Image
 
-from algorithms.image_enhancer import ImageEnhancer
+from algorithms import image_enhancer as ie
 from algorithms.style_transfer import StyleTransfer
 
 
@@ -36,7 +37,7 @@ class VideoApp:
             if src_video:
                 tfile = tempfile.NamedTemporaryFile(delete=False)
                 tfile.write(src_video.read())
-                self.src_video = tfile # cv.VideoCapture(tfile.name)
+                self.src_video = tfile
                 st.video(src_video)
 
         with col2:
@@ -47,18 +48,15 @@ class VideoApp:
 
     def transfer_style(self) -> None:
         stf = StyleTransfer()
-        img_enhancer = ImageEnhancer()
         scale = self.__slider()
         if self.src_video and st.button(label='Transfer'):
             cap = cv.VideoCapture(self.src_video.name)
             fps = int(cap.get(cv.CAP_PROP_FPS))
+            output_params = {'-fps': fps, '-fourcc': 'FMP4'}
+            writer = WriteGear(output_filename="stylized_videos/output.mp4", compression_mode=False, **output_params)
             frame_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
             frame_height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
-#             out = cv.VideoWriter(f'stylized_videos/stylized_video.avi',
-#                                  cv.VideoWriter_fourcc(*'XVID'),
-#                                  fps,
-#                                  (frame_width, frame_height))
-            length = int(cap.get(cv.CAP_PROP_FRAME_COUNT))
+            length = int(cap.get(cv.CAP_PROP_FRAME_COUNT)) // 5
             img_placeholder = st.empty()
             timer_placeholder = st.empty()
             bar = st.progress(0)
@@ -69,18 +67,21 @@ class VideoApp:
                         start = time.perf_counter()
                         stylized_frame = stf.transfer_style(frame, self.style_img,
                                                             (100 - scale) / 100 * (1080 - 360) + 360)
-                        enhanced_frame = img_enhancer.reproduce_shape(stylized_frame, (frame_width, frame_height))
+                        resized_frame = ie.reproduce_shape(stylized_frame, (frame_width, frame_height))
+                        enhanced_frame = ie.increase_saturation(resized_frame)
+                        frame_rgb = np.asarray(enhanced_frame)[:, :, ::-1]
+                        writer.write(frame_rgb, rgb_mode=True)
                         end = time.perf_counter()
-                        img_placeholder.image(stylized_frame)
-#                         out.write(np.asarray(stylized_frame))
+                        img_placeholder.image(enhanced_frame)
                         time_to_wait = int((end - start) * (length - i) // 60)
                         timer_placeholder.write(
                             f'{i+1}/{length} frames are processed. Style transfer will end in {time_to_wait} minutes')
-                        bar.progress(i / length)
-                    except Exception:
-                        pass
+                        bar.progress((i + 1) / length)
+                    except Exception as e:
+                        st.write(e)
+            timer_placeholder.write('Video style transfer is complete!')
             cap.release()
-#             out.release()
+            writer.close()
 
     def __slider(self) -> int:
         """Display slider.
@@ -89,10 +90,10 @@ class VideoApp:
         return st.slider(label='Interpolation', min_value=0, max_value=100, value=50, step=1)
 
     def download(self) -> None:
-        if os.path.exists('stylized_videos/stylized_video.avi'):
-            with open('stylized_videos/stylized_video.avi', 'rb') as file:
+        if os.path.exists('stylized_videos/output.mp4'):
+            with open('stylized_videos/output.mp4', 'rb') as file:
                 with st.container():
                     st.download_button(label='Download',
                                        data=file,
-                                       file_name=f'stylized_video.avi',
+                                       file_name=f'output.mp4',
                                        key=random.randint(0, 10000))

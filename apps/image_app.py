@@ -4,7 +4,7 @@ import random
 import streamlit as st
 from PIL import Image
 
-from algorithms.image_enhancer import ImageEnhancer
+from algorithms import image_enhancer as ie
 from algorithms.style_transfer import StyleTransfer
 
 
@@ -19,6 +19,12 @@ class ImageApp:
         super().__init__()
         self.source_img = source_img
         self.style_img = style_img
+
+    def run(self):
+        self.create_folder()
+        self.image_upload()
+        self.generate()
+        self.history()
 
     def image_upload(self) -> None:
         """Displays two button for content and style image uploading."""
@@ -53,8 +59,8 @@ class ImageApp:
                 st.session_state.generate_button_status = True
                 stylized_image = get_style_transfer().transfer_style(self.source_img, self.style_img,
                                                                      (100 - scale) / 100 * (1080 - 360) + 360)
-                stylized_image = ImageEnhancer.reproduce_shape(stylized_image, self.source_img.size)
-                stylized_image = ImageEnhancer.increase_saturation(stylized_image, 1.15)
+                stylized_image = ie.reproduce_shape(stylized_image, self.source_img.size)
+                stylized_image = ie.increase_saturation(stylized_image, 1.15)
                 stylized_image_number = len(os.listdir(f'generated_images')) if os.path.isdir(
                     f'generated_images') else 0
                 stylized_image.save(f'generated_images/{stylized_image_number}.png')

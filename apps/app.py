@@ -34,10 +34,7 @@ class Application:
                                  orientation='vertical')
         if option == 'Image':
             image_app = ImageApp()
-            image_app.create_folder()
-            image_app.image_upload()
-            image_app.generate()
-            image_app.history()
+            image_app.run()
         elif option == 'Video':
             video_app = VideoApp()
             video_app.run()
@@ -45,9 +42,3 @@ class Application:
             st.image('assets/examples.png')
         else:
             st.markdown('You can find the network in this [paper](https://arxiv.org/abs/1705.06830).')
-
-    def slider(self) -> int:
-        """Display slider.
-        Returns:
-            intensity value (int)"""
-        return st.slider(label='Intensity', min_value=0, max_value=100, value=50, step=1)
