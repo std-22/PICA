@@ -52,7 +52,7 @@ class VideoApp:
         if self.src_video and st.button(label='Transfer'):
             cap = cv.VideoCapture(self.src_video.name)
             fps = int(cap.get(cv.CAP_PROP_FPS))
-            output_params = {'-fps': fps, '-fourcc': 'FMP4'}
+            output_params = {'-fps': fps, '-fourcc': 'MP4V'}
             writer = WriteGear(output_filename="stylized_videos/output.mp4", compression_mode=False, **output_params)
             frame_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
             frame_height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
