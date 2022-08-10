@@ -56,7 +56,7 @@ class VideoApp:
             writer = WriteGear(output_filename="stylized_videos/output.mp4", compression_mode=False, **output_params)
             frame_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
             frame_height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
-            length = int(cap.get(cv.CAP_PROP_FRAME_COUNT)) // 5
+            length = int(cap.get(cv.CAP_PROP_FRAME_COUNT))
             img_placeholder = st.empty()
             timer_placeholder = st.empty()
             bar = st.progress(0)
