@@ -13,24 +13,12 @@ from algorithms import image_enhancer as ie
 from algorithms.style_transfer import StyleTransfer
 
 
-def get_size(start_path = '.'):
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(start_path):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            # skip if it is symbolic link
-            if not os.path.islink(fp):
-                total_size += os.path.getsize(fp)
-    return total_size
-
-
 class VideoApp:
     def __init__(self, src_video=None, style_img=None):
         self.src_video = src_video
         self.style_img = style_img
 
     def run(self) -> None:
-        st.write(get_size(os.getcwd()) / 2**20, 'MB')
         self.create_folder()
         self.upload()
         self.transfer_style()
@@ -64,8 +52,8 @@ class VideoApp:
         if self.src_video and st.button(label='Transfer'):
             cap = cv.VideoCapture(self.src_video.name)
             fps = int(cap.get(cv.CAP_PROP_FPS))
-            output_params = {'-fps': fps, '-fourcc': 'mp4v'}
-            writer = WriteGear(output_filename="stylized_videos/output1.mp4", compression_mode=False, **output_params)
+            output_params = {'-fps': fps, '-fourcc': 'X264'}
+            writer = WriteGear(output_filename="stylized_videos/output.mp4", compression_mode=False, **output_params)
             frame_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
             frame_height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
             length = int(cap.get(cv.CAP_PROP_FRAME_COUNT))
