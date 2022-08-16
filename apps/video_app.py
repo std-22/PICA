@@ -27,6 +27,7 @@ class VideoApp:
         self.transfer_style()
         self.assemble_video()
         self.download()
+        self.clean_directory()
 
     def create_folder(self) -> None:
         """Create folders if they do not exist"""
@@ -39,7 +40,7 @@ class VideoApp:
         """Displays two button for content and style image uploading."""
         col1, col2 = st.columns(2)
         with col1:
-            src_video = st.file_uploader(label='Source video', type=['avi', 'mp4', 'gif'])
+            src_video = st.file_uploader(label='Source video', type=['avi', 'mp4', 'gif', 'mov'])
             if src_video:
                 tfile = tempfile.NamedTemporaryFile(delete=False)
                 tfile.write(src_video.read())
