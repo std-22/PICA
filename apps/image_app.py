@@ -36,7 +36,7 @@ class ImageApp:
                 st.image(src_image, caption='Source image')
 
         with col2:
-            style_image = st.file_uploader(label='Style image', type=['png', 'jpg', 'webp'])
+            style_image = st.file_uploader(label='Style image', type=['png', 'jpg', 'webp'], key='image-style-image')
             if style_image:
                 self.style_img = Image.open(style_image)
                 st.image(style_image, caption='Style image')
