@@ -7,6 +7,7 @@ import cv2 as cv
 import numpy as np
 import streamlit as st
 from PIL import Image
+from natsort import natsorted
 from subprocess import Popen, PIPE
 
 from algorithms import image_enhancer as ie
@@ -15,7 +16,8 @@ from algorithms.style_transfer import StyleTransfer
 
 class VideoApp:
     def __init__(self, src_video=None, style_img=None):
-        st.session_state['video_status'] = None
+        if 'video_status' not in st.session_state:
+            st.session_state['video_status'] = None
         self.src_video = src_video
         self.style_img = style_img
 
@@ -100,7 +102,7 @@ class VideoApp:
                 ['ffmpeg', '-y', '-f', 'image2pipe', '-vcodec', 'mjpeg', '-r', str(fps), '-i', '-', '-vcodec', 'mpeg4',
                  '-qscale', '5', '-r', str(fps), 'stylized_videos/pica-stylized-video.mp4'], stdin=PIPE)
             bar = st.progress(0)
-            directory = sorted(os.listdir('stylized_video_frames'), key=len)
+            directory = natsorted(os.listdir('stylized_video_frames'))
             length = len(directory)
             placeholder = st.empty()
             placeholder.write(f'Video assembling in process')

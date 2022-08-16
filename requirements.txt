@@ -5,3 +5,4 @@ opencv-python-headless~=4.6.0.66
 Pillow~=7.1.1
 streamlit~=1.11.1
 streamlit-option-menu~=0.3.2
+natsort~=8.1.0
