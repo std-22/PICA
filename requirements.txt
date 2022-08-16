@@ -2,8 +2,6 @@ tensorflow-gpu~=2.9.1
 tensorflow_hub~=0.12.0
 numpy~=1.22.3
 opencv-python-headless~=4.6.0.66
-vidgear
 Pillow~=7.1.1
 streamlit~=1.11.1
 streamlit-option-menu~=0.3.2
-extra-streamlit-components~=0.1.53
