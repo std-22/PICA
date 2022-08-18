@@ -13,6 +13,14 @@ from subprocess import Popen, PIPE
 from algorithms import image_enhancer as ie
 from algorithms.style_transfer import StyleTransfer
 
+ASSEMBLED = 'ASSEMBLED'
+
+
+@st.experimental_singleton
+def get_style_transfer() -> StyleTransfer:
+    """"""
+    return StyleTransfer()
+
 
 class VideoApp:
     def __init__(self, src_video=None, style_img=None):
@@ -26,8 +34,8 @@ class VideoApp:
         self.upload()
         self.transfer_style()
         self.assemble_video()
-        self.download()
         self.clean_directory()
+        self.download()
 
     def create_folder(self) -> None:
         """Create folders if they do not exist"""
@@ -55,7 +63,7 @@ class VideoApp:
                 st.image(self.style_img, caption='Style image')
 
     def transfer_style(self) -> None:
-        stf = StyleTransfer()
+        stf = get_style_transfer()
         scale = self.__slider()
         if self.src_video and st.button(label='Transfer'):
             cap = cv.VideoCapture(self.src_video.name)
@@ -70,14 +78,15 @@ class VideoApp:
                 if ret:
                     try:
                         start = time.perf_counter()
-                        stylized_frame = stf.transfer_style(frame, self.style_img,
+                        stylized_frame = stf.transfer_style(frame,
+                                                            self.style_img,
                                                             (100 - scale) / 100 * (1080 - 360) + 360)
                         resized_frame = ie.reproduce_shape(stylized_frame, (frame_width, frame_height))
                         enhanced_frame = ie.increase_saturation(resized_frame)
-                        frame_rgb = Image.fromarray(np.asarray(enhanced_frame))
+                        frame_rgb = Image.fromarray(np.asarray(enhanced_frame)[:, :, ::-1])
                         frame_rgb.save(f'stylized_video_frames/{i}.jpg')
                         end = time.perf_counter()
-                        img_placeholder.image(enhanced_frame)
+                        img_placeholder.image(frame_rgb)
                         time_to_wait = int((end - start) * (length - i) // 60)
                         timer_placeholder.write(
                             f'{i + 1}/{length} frames are processed. Style transfer will end in {time_to_wait} minutes')
@@ -102,11 +111,11 @@ class VideoApp:
             p = Popen(
                 ['ffmpeg', '-y', '-f', 'image2pipe', '-vcodec', 'mjpeg', '-r', str(fps), '-i', '-', '-vcodec', 'mpeg4',
                  '-qscale', '5', '-r', str(fps), 'stylized_videos/pica-stylized-video.mp4'], stdin=PIPE)
-            bar = st.progress(0)
             directory = natsorted(os.listdir('stylized_video_frames'))
             length = len(directory)
             placeholder = st.empty()
             placeholder.write(f'Video assembling in process')
+            bar = st.progress(0)
             for index, image in enumerate(directory):
                 frame = Image.open('stylized_video_frames/' + image)
                 frame.save(p.stdin, 'JPEG')
@@ -114,19 +123,18 @@ class VideoApp:
             placeholder.write('Video assembling is complete')
             p.stdin.close()
             p.wait()
-            st.session_state['video_status'] = 'Assembled'
+            st.session_state['video_status'] = ASSEMBLED
 
     def download(self) -> None:
         if os.path.exists('stylized_videos/pica-stylized-video.mp4'):
             with open('stylized_videos/pica-stylized-video.mp4', 'rb') as file:
                 with st.container():
-                    if st.download_button(label='Download',
-                                          data=file,
-                                          file_name=f'pica-stylized-video.mp4',
-                                          key=random.randint(0, 10000)):
-                        st.session_state['video_status'] = 'DOWNLOADED'
+                    st.download_button(label='Download',
+                                       data=file,
+                                       file_name=f'Stylized video by PICA {time.asctime()}.mp4',
+                                       key=random.randint(0, 10000))
 
     def clean_directory(self):
-        if st.session_state['video_status'] == 'DOWNLOADED' and os.path.exists('stylized_video_frames'):
+        if st.session_state['video_status'] == ASSEMBLED and os.path.exists('stylized_video_frames'):
             for file in os.listdir('stylized_video_frames'):
                 os.remove('stylized_video_frames/' + file)

@@ -67,10 +67,9 @@ class ImageApp:
                 placeholder.button('Generate', disabled=False, key='3')
                 placeholder.empty()
                 st.experimental_rerun()
-        except Exception as e:
+        except Exception:
             st.error('Something went wrong...')
             st.error('We are already working to fix this bug!')
-            st.write(e)
 
     def slider(self) -> int:
         """Display slider.
