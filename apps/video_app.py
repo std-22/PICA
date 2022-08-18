@@ -30,6 +30,7 @@ class VideoApp:
         self.style_img = style_img
 
     def run(self) -> None:
+        st.info('Video style transfer works in test mode. Stable work and nice result is not guaranteed!')
         self.create_folder()
         self.upload()
         self.transfer_style()
@@ -83,7 +84,7 @@ class VideoApp:
                                                             (100 - scale) / 100 * (1080 - 360) + 360)
                         resized_frame = ie.reproduce_shape(stylized_frame, (frame_width, frame_height))
                         enhanced_frame = ie.increase_saturation(resized_frame)
-                        frame_rgb = Image.fromarray(np.asarray(enhanced_frame)[:, :, ::-1])
+                        frame_rgb = Image.fromarray(np.asarray(enhanced_frame))
                         frame_rgb.save(f'stylized_video_frames/{i}.jpg')
                         end = time.perf_counter()
                         img_placeholder.image(frame_rgb)
