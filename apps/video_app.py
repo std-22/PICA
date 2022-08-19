@@ -30,7 +30,7 @@ class VideoApp:
         self.style_img = style_img
 
     def run(self) -> None:
-        st.info('Video style transfer works in test mode. Stable work and nice result is not guaranteed!')
+        st.info('Video style transfer works in test mode. Stable work and nice result are not guaranteed!')
         self.create_folder()
         self.upload()
         self.transfer_style()

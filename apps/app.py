@@ -39,6 +39,11 @@ class Application:
             video_app = VideoApp()
             video_app.run()
         elif option == 'Gallery':
+            st.header('Image style transfer examples')
             st.image('assets/examples.png')
+            st.header('Video style transfer example')
+            st.video('assets/video_style_transfer_example.mp4')
         else:
             st.markdown('You can find the network in this [paper](https://arxiv.org/abs/1705.06830).')
+            st.markdown('Pretrained model is taken from [TensorFlow Hub]('
+                        'https://www.tensorflow.org/hub/tutorials/tf2_arbitrary_image_stylization)')
