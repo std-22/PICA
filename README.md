@@ -10,7 +10,7 @@ Click on badge below to go to the website
 Performs great quality mostly on images with artistic style. 
 ![image style transfer examples](https://github.com/MelikbekyanAshot/PICA/blob/main/assets/examples.png)
 
-### Video style transfer example
+### Video style transfer warning
 Performs good quality only on videos with fixed background.
 
 https://user-images.githubusercontent.com/41271647/185554646-6fedf522-adf7-4bcc-8a96-3be976774ba3.mp4
